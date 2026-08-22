@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Images de la page d’accueil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ecf0f1;
+        }
+
+        img {
+            border-radius: 6px;
+        }
+
+        .status-yes {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-no {
+            color: red;
+            font-weight: bold;
+        }
+
+        .top-actions {
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-add {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-back {
+            background-color: #7f8c8d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        /* Formulaire caché */
+        .form-container {
+            display: none; /* caché par défaut */
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="file"] {
+            padding: 6px;
+            margin-right: 8px;
+        }
+
+        .form-container label {
+            margin-right: 5px;
+        }
+
+        .form-container button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Gestion des images de la page d’accueil</h1>
+</header>
+
+<div class="container">
+
+    <div class="top-actions">
+        <button class="btn btn-add" id="showFormBtn">➕ Ajouter une image</button>
+        <a href="/dashboard/" class="btn btn-back">⬅ Retour dashboard</a>
+    </div>
+
+    <!-- Formulaire caché -->
+    <div class="form-container" id="formContainer">
+        <form method="post" enctype="multipart/form-data" action="{% url 'admin_dashboard:images_accueil_ajouter' %}">
+            {% csrf_token %}
+            <label for="id_image">Image :</label>
+            <input type="file" name="image" id="id_image" required>
+
+            <label for="id_description">Description :</label>
+            <input type="text" name="description" id="id_description">
+
+            <label for="id_actif">Actif :</label>
+            <input type="checkbox" name="actif" id="id_actif" checked>
+
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Description</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for img in images %}
+            <tr>
+                <td>
+                    <img src="{{ img.image.url }}" width="120">
+                </td>
+                <td>
+                    {{ img.description }}
+                </td>
+                <td>
+                    {% if img.actif %}
+                        <span class="status-yes">Oui</span>
+                    {% else %}
+                        <span class="status-no">Non</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if img.actif %}
+                        <a href="{% url 'admin_dashboard:images_accueil_toggle' img.id %}" style="color:orange;">Désactiver</a>
+                    {% else %}
+                        <a href="{% url 'admin_dashboard:images_accueil_toggle' img.id %}" style="color:green;">Activer</a>
+                        <a href="{% url 'admin_dashboard:images_accueil_supprimer' img.id %}" style="color:red; margin-left: 10px;">Supprimer</a>
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Aucune image enregistrée.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    const showFormBtn = document.getElementById('showFormBtn');
+    const formContainer = document.getElementById('formContainer');
+
+    showFormBtn.addEventListener('click', function() {
+        if (formContainer.style.display === "none") {
+            formContainer.style.display = "block";
+            showFormBtn.textContent = "❌ Annuler";
+        } else {
+            formContainer.style.display = "none";
+            showFormBtn.textContent = "➕ Ajouter une image";
+        }
+    });
+</script>
+
+</body>
+</html>

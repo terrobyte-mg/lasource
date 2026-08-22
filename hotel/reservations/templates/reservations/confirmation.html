@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation de réservation</title>
+
+  <!-- Bootstrap (optionnel mais utile pour le style) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <section class="section text-center">
+    <div class="container" style="max-width: 600px">
+      <h2>Merci pour votre réservation !</h2>
+      <p>Nous avons bien reçu votre demande.<br>
+         Vous allez recevoir un e-mail de confirmation dans les prochaines minutes.</p>
+      <a href="{% url 'home' %}" class="btn btn-primary">Retour à l’accueil</a>
+    </div>
+  </section>
+
+  <!-- Bootstrap JS (si nécessaire) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

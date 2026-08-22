@@ -1,0 +1,101 @@
+/* ===============================
+   STYLE GÉNÉRAL DU SITE HÔTEL
+   =============================== */
+
+:root {
+  --primary: #007bff;
+  --primary-dark: #0056b3;
+  --muted: #6c757d;
+  --bg-light: #f8f9fa;
+  --container-max: 900px;
+  --radius: 12px;
+}
+
+/* Corps de page */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: #212529;
+  margin: 0;
+  padding: 0;
+}
+
+/* Conteneur principal */
+.section {
+  padding: 3rem 1rem;
+}
+
+/* Titres */
+h2 {
+  color: var(--primary-dark);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Paragraphes */
+p {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Boutons */
+.btn-primary {
+  background-color: var(--primary);
+  border: none;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   PAGE : LISTE DES CHAMBRES
+   =============================== */
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.room {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.room:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+
+.room .body {
+  padding: 1rem 1.2rem;
+}
+
+.room .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .5rem;
+  font-weight: 500;
+}
+
+.room .price {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.room p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}

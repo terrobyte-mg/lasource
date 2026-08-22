@@ -1,0 +1,865 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Détails Réservation - Hôtel La Source</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --aqua-dark: #0077b6;
+            --aqua-mid: #00b4d8;
+            --aqua-soft: #cfeefd;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --muted: #6b7280;
+            --card-bg: #ffffff;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto;
+            background: linear-gradient(180deg, #f9fbfd 0%, #f2f8fb 100%);
+            color: #12202b;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            max-width: 100vw;
+        }
+
+        h1, h2, h3 { 
+            font-family: "Playfair Display", serif; 
+            color: var(--aqua-dark); 
+        }
+        
+        a { 
+            text-decoration: none; 
+            color: var(--aqua-dark);
+            -webkit-touch-callout: none;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: #fff;
+            padding: 2rem 0;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, .1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: var(--transition);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .sidebar-header h2 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: .3rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .sidebar-header p {
+            color: rgba(255, 255, 255, .6);
+            font-size: .85rem;
+        }
+
+        .sidebar-nav { 
+            flex: 1; 
+            padding: 1.5rem 0; 
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            color: rgba(255, 255, 255, .5);
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 1.5rem;
+            margin-bottom: .8rem;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: .8rem 1.5rem;
+            color: rgba(255, 255, 255, .8);
+            transition: var(--transition);
+            position: relative;
+            min-height: 48px;
+        }
+
+        .nav-link:hover, .nav-link:active { 
+            background: var(--sidebar-hover); 
+            color: #fff; 
+        }
+
+        .nav-link.active { 
+            background: var(--aqua-dark); 
+            color: #fff; 
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--aqua-mid);
+        }
+
+        .nav-link .icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .user-info { 
+            display: flex; 
+            align-items: center; 
+            gap: .8rem; 
+        }
+
+        .user-avatar {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%;
+            background: var(--aqua-mid); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: 700; 
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: .9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .5);
+        }
+
+        .logout-btn {
+            background: transparent; 
+            border: 1px solid rgba(255, 255, 255, .2);
+            color: rgba(255, 255, 255, .8); 
+            padding: .5rem;
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: var(--transition);
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logout-btn:hover, .logout-btn:active { 
+            background: var(--danger); 
+            border-color: var(--danger); 
+            color: #fff; 
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            width: calc(100% - 280px);
+            min-height: 100vh;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Messages */
+        .messages-container {
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .05);
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        .alert-success { 
+            background: rgba(16,185,129,.1); 
+            color: #065f46; 
+            border-left: 4px solid #10b981; 
+        }
+
+        .alert-warning { 
+            background: rgba(245,158,11,.1); 
+            color: #92400e; 
+            border-left: 4px solid #f59e0b; 
+        }
+
+        .alert-error { 
+            background: rgba(239,68,68,.1); 
+            color: #7f1d1d; 
+            border-left: 4px solid #ef4444; 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Reservation Card */
+        .reservation-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .05);
+            border: 1px solid #f0f5f9;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f5f9;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .reservation-header h1 { 
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            line-height: 1.2;
+        }
+
+        .badge {
+            padding: .5rem 1rem;
+            border-radius: 8px;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            white-space: nowrap;
+        }
+
+        .badge-success { 
+            background: rgba(16,185,129,.1); 
+            color: var(--success); 
+        }
+
+        .badge-warning { 
+            background: rgba(245,158,11,.1); 
+            color: var(--warning); 
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-section {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--muted);
+            font-weight: 500;
+            font-size: clamp(0.85rem, 2vw, 0.9rem);
+        }
+
+        .info-value {
+            color: #12202b;
+            font-weight: 600;
+            text-align: right;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        .info-value.highlight {
+            color: var(--aqua-dark);
+            font-size: 1.1rem;
+        }
+
+        /* Actions */
+        .actions {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f0f5f9;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: .8rem 1.4rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: clamp(0.85rem, 2vw, 0.9rem);
+            min-height: 44px;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success { 
+            background: var(--success);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, .2);
+        }
+
+        .btn-success:hover:not(:disabled), .btn-success:active:not(:disabled) { 
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, .3);
+        }
+
+        .btn-danger { 
+            background: var(--danger);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, .2);
+        }
+
+        .btn-danger:hover:not(:disabled), .btn-danger:active:not(:disabled) { 
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, .3);
+        }
+
+        .btn-warning { 
+            background: var(--warning);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, .2);
+        }
+
+        .btn-warning:hover:not(:disabled), .btn-warning:active:not(:disabled) { 
+            background: #e79a3c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, .3);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            margin-top: 1.5rem;
+            color: var(--aqua-dark);
+            font-weight: 600;
+            padding: .8rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            min-height: 44px;
+        }
+
+        .back-link:hover, .back-link:active {
+            background: rgba(0, 119, 182, .05);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background: var(--aqua-dark);
+            color: #fff;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+            font-size: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            transition: var(--transition);
+        }
+
+        .menu-toggle.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .overlay.active { 
+            display: block; 
+        }
+
+        /* Tablet Responsive */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            
+            main { 
+                margin-left: 0; 
+                width: 100%;
+                padding: 5rem 1.5rem 2rem;
+            }
+            
+            .menu-toggle { display: flex; }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            main {
+                padding: 4.5rem 1rem 1.5rem;
+            }
+
+            .reservation-card {
+                padding: 1.5rem;
+            }
+
+            .reservation-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .info-section {
+                padding: 1.2rem;
+            }
+
+            .menu-toggle {
+                width: 44px;
+                height: 44px;
+                top: 0.75rem;
+                left: 0.75rem;
+            }
+
+            .sidebar {
+                width: 260px;
+            }
+        }
+
+        /* Extra Small Devices */
+        @media (max-width: 360px) {
+            main {
+                padding: 4rem 0.75rem 1rem;
+            }
+
+            .reservation-card {
+                padding: 1.2rem;
+            }
+
+            .sidebar {
+                width: 240px;
+            }
+        }
+
+        /* Landscape orientation on small devices */
+        @media (max-height: 500px) and (orientation: landscape) {
+            main {
+                padding-top: 3.5rem;
+            }
+
+            .menu-toggle {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Touch-specific improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .nav-link,
+            .btn,
+            .back-link {
+                -webkit-tap-highlight-color: rgba(0, 119, 182, 0.1);
+            }
+
+            .btn:active:not(:disabled) {
+                transform: scale(0.98);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" role="navigation">
+        <div class="sidebar-header">
+            <h2>🏨 La Source</h2>
+            <p>Tableau de bord admin</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="nav-link">
+                    <span class="icon">📊</span>
+                    <span>Tableau de bord</span>
+                </a>
+                <a href="{% url 'admin_dashboard:reservations' %}" class="nav-link active">
+                    <span class="icon">📅</span>
+                    <span>Réservations</span>
+                </a>
+                <a href="{% url 'admin_dashboard:chambres' %}" class="nav-link">
+                    <span class="icon">🛏️</span>
+                    <span>Chambres</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Site</div>
+                <a href="{% url 'home' %}" class="nav-link" target="_blank" rel="noopener">
+                    <span class="icon">🏠</span>
+                    <span>Voir le site</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">{{ user.username|slice:":2"|upper }}</div>
+                <div class="user-details">
+                    <div class="user-name">{{ user.username|title }}</div>
+                    {% if user.is_superuser %}
+                    <div class="user-role">Administrateur</div>
+                    {% elif user.is_staff %}
+                    <div class="user-role">Staff</div>
+                    {% endif %}
+                </div>
+                <form method="post" action="{% url 'admin_dashboard:logout' %}" style="margin:0">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn" title="Déconnexion" aria-label="Déconnexion">🚪</button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="reservation-card">
+            <div class="reservation-header">
+                <h1>📋 Réservation #{{ reservation.id }}</h1>
+                {% if reservation.payee %}
+                    <span class="badge badge-success">✓ Payée</span>
+                {% else %}
+                    <span class="badge badge-warning">⏳ Non payée</span>
+                {% endif %}
+            </div>
+
+            <div class="info-grid">
+                <!-- Informations Client -->
+                <div class="info-section">
+                    <div class="info-section-title">👤 Informations Client</div>
+                    <div class="info-item">
+                        <span class="info-label">Nom complet</span>
+                        <span class="info-value">{{ reservation.nom }} {{ reservation.prenom }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">CIN</span>
+                        <span class="info-value">{{ reservation.cin }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ reservation.email }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Téléphone</span>
+                        <span class="info-value">{{ reservation.telephone }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Adresse</span>
+                        <span class="info-value">{{ reservation.adresse }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Emploi</span>
+                        <span class="info-value">{{ reservation.emploi }}</span>
+                    </div>
+                </div>
+
+                <!-- Détails Séjour -->
+                <div class="info-section">
+                    <div class="info-section-title">🏨 Détails du Séjour</div>
+                    <div class="info-item">
+                        <span class="info-label">Chambre</span>
+                        <span class="info-value">{{ reservation.chambre.numero }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Type</span>
+                        <span class="info-value">{{ reservation.chambre.get_type_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Arrivée</span>
+                        <span class="info-value">{{ reservation.date_arrivee|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Départ</span>
+                        <span class="info-value">{{ reservation.date_depart|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Durée</span>
+                        <span class="info-value">{{ nbJours }} jour{{ nbJours|pluralize }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Prix total</span>
+                        <span class="info-value highlight">{{ prix|intcomma }} Ar</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                {% if not reservation.confirmee %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="confirmer_reservation" class="btn btn-success">
+                        ✅ Approuver la réservation
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if user.is_superuser and reservation.confirmee %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="annuler_reservation" class="btn btn-warning">
+                        ⚠️ Annuler la réservation
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if reservation.confirmee and not reservation.payee %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="confirmer_payement" class="btn btn-success">
+                        ✅ Approuver le paiement
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if user.is_superuser and reservation.payee %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="annuler_payement" class="btn btn-warning">
+                        ⚠️ Annuler le paiement
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if user.is_superuser %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="supprimer_reservation" class="btn btn-danger">
+                        ❌ Supprimer
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+            <a href="{% url 'admin_dashboard:reservations' %}" class="back-link">
+                ← Retour aux réservations
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            menuToggle.classList.toggle('hidden');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+                toggleMenu();
+            }
+        });
+
+        // Auto-close mobile menu on link click
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    toggleMenu();
+                }
+            });
+        });
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (window.innerWidth > 992 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    menuToggle.classList.remove('hidden');
+                    document.body.style.overflow = '';
+                }
+            }, 250);
+        });
+
+        // Messages auto-hide
+        document.addEventListener("DOMContentLoaded", function(){
+            const alerts = document.querySelectorAll(".messages-container .alert");
+
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = "opacity 0.5s ease";
+                    alert.style.opacity = "0";
+
+                    setTimeout(() => alert.remove(), 500);
+                }, 4000);
+            });
+        });
+
+        // Prevent scroll on touch move when menu is open (iOS fix)
+        document.addEventListener('touchmove', (e) => {
+            if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                menuToggle.classList.remove('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html>

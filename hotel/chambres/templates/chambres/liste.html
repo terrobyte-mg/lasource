@@ -1,0 +1,525 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nos chambres — Hôtel La Source</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* Variables & reset */
+    :root {
+      --aqua-dark: #0077b6;
+      --aqua-mid: #00b4d8;
+      --aqua-soft: #cfeefd;
+      --muted: #6b7280;
+      --card-bg: #ffffff;
+      --radius: 12px;
+      --container-max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #f9fbfd 0%, #f2f8fb 100%);
+      color: #12202b;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      color: var(--aqua-dark);
+    }
+
+    a { text-decoration: none; }
+
+    /* NAVBAR */
+    .navbar {
+      background: linear-gradient(90deg, var(--aqua-dark), var(--aqua-mid));
+      padding: .7rem 1rem;
+      box-shadow: 0 6px 18px rgba(3, 37, 65, .08);
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+    }
+
+    .navbar .navbar-brand {
+      color: #fff;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .navbar .navbar-brand img {
+      height: 44px;
+      width: auto;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, .95) !important;
+      font-weight: 500;
+    }
+
+    .nav-link:hover, .nav-link:focus {
+      color: #fff !important;
+      opacity: .95;
+    }
+
+    .dropdown-menu { border-radius: 10px; padding: .4rem; }
+
+    .navbar-toggler { border-color: rgba(255, 255, 255, .12); }
+    .navbar-toggler-icon { filter: invert(1) brightness(2); }
+
+    /* SECTION */
+    .section {
+      padding: 4rem 1rem;
+      max-width: var(--container-max);
+      margin: 0 auto;
+    }
+
+    .section h2 {
+      margin-bottom: 2rem;
+      font-size: 2.2rem;
+      text-align: center;
+    }
+
+    /* ROOMS GRID */
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .room {
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(3, 37, 65, .04);
+      transition: transform .18s, box-shadow .18s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0, 119, 182, .08);
+    }
+
+    .room:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(3, 37, 65, .08);
+    }
+
+    /* Carousel dans la carte */
+    .room .carousel {
+      background: #f3f7fb;
+      position: relative;
+    }
+
+    .room .carousel-inner {
+      border-radius: 0;
+    }
+
+    .room .carousel-item img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .room .thumb {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      background: #f3f7fb;
+    }
+
+    /* Carousel controls custom */
+    .carousel-control-prev,
+    .carousel-control-next {
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 119, 182, .85);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .room:hover .carousel-control-prev,
+    .room:hover .carousel-control-next {
+      opacity: 1;
+    }
+
+    .carousel-control-prev {
+      left: 10px;
+    }
+
+    .carousel-control-next {
+      right: 10px;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Card body */
+    .room .body {
+      padding: 1.3rem 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+
+    .room .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      gap: .8rem;
+      flex-wrap: wrap;
+    }
+
+    .room .meta .price {
+      color: var(--aqua-dark);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .room .body p {
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.6;
+      margin: 0;
+      flex: 1;
+    }
+
+    .room .body .btn {
+      margin-top: auto;
+      border-radius: 8px;
+      padding: .6rem 1.2rem;
+      font-weight: 600;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--aqua-soft);
+      margin-bottom: 1rem;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #003355;
+      color: #dbeffc;
+      padding: 2.2rem 1rem;
+      margin-top: 3rem;
+    }
+
+    footer a { color: #9fe9ff; }
+
+    /* RESPONSIVE - Tablettes (≤992px) */
+    @media (max-width: 992px) {
+      .section {
+        padding: 3.5rem 1rem;
+      }
+
+      .section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.8rem;
+      }
+
+      .rooms-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .room .carousel-item img,
+      .room .thumb {
+        height: 220px;
+      }
+    }
+
+    /* RESPONSIVE - Mobiles (≤768px) */
+    @media (max-width: 768px) {
+      .navbar .navbar-brand {
+        font-size: .95rem;
+      }
+
+      .navbar .navbar-brand img {
+        height: 36px;
+      }
+
+      .section {
+        padding: 3rem 1rem;
+      }
+
+      .section h2 {
+        font-size: 1.7rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .rooms-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.3rem;
+      }
+
+      .room .carousel-item img,
+      .room .thumb {
+        height: 200px;
+      }
+
+      .room .body {
+        padding: 1.1rem 1rem;
+        gap: .7rem;
+      }
+
+      .room .meta {
+        font-size: .95rem;
+      }
+
+      .room .body p {
+        font-size: .9rem;
+      }
+
+      .carousel-control-prev,
+      .carousel-control-next {
+        width: 36px;
+        height: 36px;
+      }
+
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        width: 18px;
+        height: 18px;
+      }
+
+      footer .row {
+        text-align: center;
+      }
+
+      footer .col-md-6.text-md-end {
+        text-align: center !important;
+        margin-top: 1rem;
+      }
+    }
+
+    /* RESPONSIVE - Petits mobiles (≤576px) */
+    @media (max-width: 576px) {
+      .section {
+        padding: 2.5rem .8rem;
+      }
+
+      .section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.3rem;
+      }
+
+      .rooms-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+
+      .room .carousel-item img,
+      .room .thumb {
+        height: 220px;
+      }
+
+      .room .body {
+        padding: 1rem .9rem;
+      }
+
+      .room .meta {
+        font-size: .9rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .4rem;
+      }
+
+      .room .body p {
+        font-size: .85rem;
+      }
+
+      .room .body .btn {
+        width: 100%;
+        padding: .7rem;
+      }
+
+      /* Controls plus visibles sur mobile */
+      .carousel-control-prev,
+      .carousel-control-next {
+        opacity: .8;
+      }
+    }
+
+    /* RESPONSIVE - Très petits mobiles (≤400px) */
+    @media (max-width: 400px) {
+      .navbar {
+        padding: .6rem .8rem;
+      }
+
+      .section {
+        padding: 2rem .6rem;
+      }
+
+      .section h2 {
+        font-size: 1.4rem;
+      }
+
+      .rooms-grid {
+        gap: 1rem;
+      }
+
+      .room .carousel-item img,
+      .room .thumb {
+        height: 200px;
+      }
+
+      .room .body {
+        padding: .9rem .8rem;
+      }
+
+      .carousel-control-prev {
+        left: 8px;
+      }
+
+      .carousel-control-next {
+        right: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container" style="max-width:var(--container-max)">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="Hôtel La Source logo"> Hôtel La Source
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
+
+          <!-- dropdown Chambres -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" href="#" id="navChambres" role="button" data-bs-toggle="dropdown" aria-expanded="false">Chambres</a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navChambres">
+              <li><a class="dropdown-item" href="{% url 'chambres:liste' %}">Les chambres</a></li>
+            </ul>
+          </li>
+
+          <!-- dropdown Réservations -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navRes" role="button" data-bs-toggle="dropdown" aria-expanded="false">Réservation</a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navRes">
+              <li><a class="dropdown-item" href="/reserver/">Nouvelle réservation</a></li>
+              <li><a class="dropdown-item" href="/reserver/">Suivre ma réservation</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SECTION CHAMBRES -->
+  <section class="section">
+    <div class="container" style="max-width: var(--container-max)">
+      <h2>Nos chambres</h2>
+
+      <div class="rooms-grid">
+        {% for ch in chambres %}
+        <div class="room">
+          {% if ch.images.exists %}
+            <div id="carousel{{ ch.id }}" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                {% for img in ch.images.all %}
+                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ img.image.url }}" class="d-block w-100" alt="{{ ch.type }}">
+                  </div>
+                {% endfor %}
+              </div>
+              <!-- Flèches seulement si ≥2 images -->
+              {% if ch.images.count > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ ch.id }}" data-bs-slide="prev" aria-label="Image précédente">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ ch.id }}" data-bs-slide="next" aria-label="Image suivante">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+              {% endif %}
+            </div>
+          {% else %}
+            <img class="thumb" src="{% static 'images/placeholder.jpg' %}" alt="{{ ch.type }}">
+          {% endif %}
+
+          <div class="body">
+            <div class="meta">
+              <div>Chambre {{ ch.numero }} – {{ ch.get_type_display }}</div>
+              <div class="price">{{ ch.prix }} Ar / nuit</div>
+            </div>
+            <p>{{ ch.caracteristiques|linebreaksbr }}</p>
+            <div>
+              <a href="{% url 'reservations:reserver' %}?chambre={{ ch.id }}" class="btn btn-primary btn-sm">Réserver maintenant</a>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+          <div class="empty-state">
+            <div><i class="fas fa-bed"></i></div>
+            <p>Aucune chambre disponible pour le moment.</p>
+            <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">Retour à l'accueil</a>
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container" style="max-width:var(--container-max)">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 style="color:#fff">Hôtel La Source</h5>
+          <p class="small text-muted">© 2025 Hôtel La Source — Ambonara, Hell-Ville, Nosy-Be, Madagascar</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="small mb-1">Suivez-nous</p>
+          <a href="#" class="me-2">Facebook</a>
+          <a href="#" class="me-2">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

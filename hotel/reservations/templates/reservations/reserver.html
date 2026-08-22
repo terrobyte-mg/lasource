@@ -1,0 +1,791 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réserver une chambre — Hôtel La Source</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Variables & reset */
+    :root {
+      --aqua-dark: #0077b6;
+      --aqua-mid: #00b4d8;
+      --aqua-soft: #cfeefd;
+      --muted: #6b7280;
+      --card-bg: #ffffff;
+      --radius: 12px;
+      --container-max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #f9fbfd 0%, #f2f8fb 100%);
+      color: #12202b;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      color: var(--aqua-dark);
+    }
+
+    a { text-decoration: none; }
+
+    /* NAVBAR */
+    .navbar {
+      background: linear-gradient(90deg, var(--aqua-dark), var(--aqua-mid));
+      padding: .7rem 1rem;
+      box-shadow: 0 6px 18px rgba(3, 37, 65, .08);
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+    }
+
+    .navbar .navbar-brand {
+      color: #fff;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .navbar .navbar-brand img {
+      height: 44px;
+      width: auto;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, .95) !important;
+      font-weight: 500;
+    }
+
+    .nav-link:hover, .nav-link:focus {
+      color: #fff !important;
+      opacity: .95;
+    }
+
+    .navbar-toggler { border-color: rgba(255, 255, 255, .12); }
+    .navbar-toggler-icon { filter: invert(1) brightness(2); }
+
+    /* SECTION */
+    .section {
+      padding: 4rem 1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* FORM CARD */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 12px 40px rgba(3, 37, 65, .08);
+      border: 1px solid rgba(0, 119, 182, .08);
+    }
+
+    .form-card h2 {
+      margin-bottom: .5rem;
+      font-size: 2rem;
+    }
+
+    .form-card .subtitle {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: .95rem;
+    }
+
+    /* FORM INPUTS */
+    .mb-3 {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 1.2rem;
+      align-items: center;
+      margin-bottom: 1.5rem !important;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #1f2937;
+      margin-bottom: 0;
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .date-row > div:first-child {
+      grid-column: 1 / 2;
+      display: contents;
+    }
+
+    .date-row > div:last-child {
+      grid-column: 1 / 3;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 1.2rem;
+      align-items: center;
+    }
+
+    /* ICON IN LABEL */
+    .label-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .label-icon i {
+      color: var(--aqua-mid);
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* HR separator */
+    .form-separator {
+      grid-column: 1 / 3;
+      margin: 2rem 0;
+      border: none;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* SUBMIT BUTTON */
+    .btn-submit {
+      background: linear-gradient(135deg, var(--aqua-dark), var(--aqua-mid));
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      padding: .9rem 2rem;
+      font-size: 1rem;
+      box-shadow: 0 8px 24px rgba(0, 119, 182, .25);
+      transition: all .2s;
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 119, 182, .35);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* INFO BOX */
+    .info-box {
+      background: linear-gradient(180deg, rgba(0, 180, 216, .06), rgba(0, 180, 216, .02));
+      border: 1px solid rgba(0, 180, 216, .15);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: start;
+      gap: .8rem;
+    }
+
+    .info-box .icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: .1rem;
+      color: var(--aqua-mid);
+    }
+
+    .info-box .text {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #003355;
+      color: #dbeffc;
+      padding: 2rem 1rem;
+      margin-top: 3rem;
+    }
+
+    footer a { color: #9fe9ff; }
+
+    /* FLATPICKR CUSTOM */
+    .flatpickr-current-month .flatpickr-monthDropdown-months select {
+      border: none;
+      background: transparent;
+      color: var(--aqua-dark);
+      font-weight: 500;
+    }
+
+    .moi {
+        flex: 0 0 150px;
+    }
+
+    .flatpickr-time input {
+      border: 1px solid rgba(0, 119, 182, 0.1);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+    }
+
+    /* RESPONSIVE - Tablettes (≤768px) */
+    @media (max-width: 768px) {
+      .navbar .navbar-brand {
+        font-size: .95rem;
+      }
+      .navbar .navbar-brand img {
+        height: 36px;
+      }
+
+      .section {
+        padding: 3rem 1rem;
+      }
+
+      .form-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .form-card h2 {
+        font-size: 1.6rem;
+      }
+
+      .form-card .subtitle {
+        font-size: .9rem;
+      }
+
+      .mb-3 {
+        grid-template-columns: 140px 1fr;
+        gap: 1rem;
+        margin-bottom: 1.3rem !important;
+      }
+
+      .form-label {
+        font-size: .9rem;
+      }
+
+      .label-icon i {
+        font-size: .9rem;
+        width: 18px;
+      }
+
+      .info-box {
+        padding: .9rem 1rem;
+      }
+
+      .info-box .text {
+        font-size: .85rem;
+      }
+
+      .btn-submit {
+        padding: .8rem 1.8rem;
+        font-size: .95rem;
+      }
+
+      footer .row {
+        text-align: center;
+      }
+
+      footer .col-md-6.text-md-end {
+        text-align: center !important;
+        margin-top: 1rem;
+      }
+    }
+
+    /* RESPONSIVE - Mobiles (≤600px) */
+    @media (max-width: 600px) {
+      .moi {
+        flex: 0 0 100px;
+      }
+      .section {
+        padding: 2rem .8rem;
+      }
+
+      .form-card {
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+      }
+
+      .form-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: .4rem;
+      }
+
+      .form-card .subtitle {
+        font-size: .85rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* FORME MOBILE: labels au-dessus des inputs */
+      .mb-3 {
+        grid-template-columns: 1fr;
+        gap: .5rem;
+        margin-bottom: 1.2rem !important;
+      }
+
+      .form-label {
+        font-size: .9rem;
+        justify-content: flex-start;
+      }
+
+      .label-icon {
+        gap: .5rem;
+      }
+
+      .label-icon i {
+        font-size: .85rem;
+        width: 16px;
+      }
+
+      .form-separator {
+        grid-column: 1;
+        margin: 1.5rem 0;
+      }
+
+      .date-row > div:first-child {
+        display: block;
+      }
+
+      .date-row > div:last-child {
+        grid-column: 1;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: .5rem;
+      }
+
+      .info-box {
+        padding: .8rem;
+        gap: .6rem;
+      }
+
+      .info-box .icon {
+        font-size: 1rem;
+      }
+
+      .info-box .text {
+        font-size: .8rem;
+      }
+
+      .btn-submit {
+        grid-column: 1;
+        padding: .75rem 1.5rem;
+        font-size: .9rem;
+        margin-top: 1rem;
+      }
+
+      /* Inputs téléphone en mode mobile */
+      .mb-3 > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column;
+        gap: .5rem;
+      }
+
+      /* Select et input en pleine largeur sur mobile */
+      select, input[type="text"], input[type="email"], textarea {
+        width: 100%;
+      }
+    }
+
+    /* RESPONSIVE - Petits mobiles (≤400px) */
+    @media (max-width: 400px) {
+      .navbar {
+        padding: .6rem .8rem;
+      }
+
+      .section {
+        padding: 1.5rem .6rem;
+      }
+
+      .form-card {
+        padding: 1.2rem .8rem;
+      }
+
+      .form-card h2 {
+        font-size: 1.3rem;
+      }
+
+      .form-card .subtitle {
+        font-size: .8rem;
+      }
+
+      .form-label {
+        font-size: .85rem;
+      }
+
+      .btn-submit {
+        padding: .7rem 1.2rem;
+        font-size: .85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container" style="max-width:var(--container-max)">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="Hôtel La Source logo"> Hôtel La Source
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#chambres">Chambres</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Réservation</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- FORM SECTION -->
+  <section class="section">
+    <div class="form-card">
+      <h2>Réserver une chambre</h2>
+      <p class="subtitle">Remplissez le formulaire ci-dessous pour effectuer votre réservation</p>
+
+      <div class="info-box">
+        <div class="icon"><i class="fas fa-info-circle"></i></div>
+        <div class="text">
+          <strong>Confirmation immédiate</strong> — Après validation, vous recevrez un email de confirmation avec tous les détails de votre séjour.
+        </div>
+      </div>
+
+      <form method="post" id="resForm">
+        {% csrf_token %}
+
+        <!-- Informations personnelles -->
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-user"></i> Nom</span>
+          </label>
+          {{ form.nom }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-user"></i> Prénom</span>
+          </label>
+          {{ form.prenom }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-id-card"></i> CIN / Passeport *</span>
+          </label>
+          <div>
+            {{ form.cin }}
+            <small class="form-text text-muted d-block mt-1">
+              Numéro de votre pièce d'identité (CIN, passeport, etc.).
+              Une vérification sera effectuée à votre arrivée à l'hôtel.
+            </small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-map-marker-alt"></i> Adresse</span>
+          </label>
+          {{ form.adresse }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-briefcase"></i> Emploi</span>
+          </label>
+          {{ form.emploi }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-phone"></i> Téléphone</span>
+          </label>
+          <div style="
+              display: flex;
+              flex-direction: row;
+              align-items: flex-end;
+              gap: 8px;
+            ">
+              <div class="moi">
+                {{ form.indicatif }}
+              </div>
+
+              <div style="flex: 1;">
+                {{ form.telephone_saisie }}
+              </div>
+            </div>
+
+          {% if form.telephone_saisie.errors %}
+            <div class="text-danger mt-1">{{ form.telephone_saisie.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-envelope"></i> Email</span>
+          </label>
+          <div>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="text-danger mt-1">{{ form.email.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <hr class="form-separator">
+
+        <!-- Dates de séjour -->
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-calendar-check"></i> Date d'arrivée</span>
+          </label>
+          <div>
+            {{ form.date_arrivee }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-calendar-times"></i> Date de départ</span>
+          </label>
+          <div>
+            {{ form.date_depart }}
+          </div>
+        </div>
+
+        <!-- Chambre -->
+        <div class="mb-3">
+          <label class="form-label">
+            <span class="label-icon"><i class="fas fa-bed"></i> Chambre</span>
+          </label>
+          {{ form.chambre }}
+        </div>
+
+        <button type="submit" class="btn-submit" style="grid-column: 1 / 3;">
+          Confirmer la réservation
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container" style="max-width:var(--container-max)">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 style="color:#fff">Hôtel La Source</h5>
+          <p class="small text-muted">© 2025 Hôtel La Source — Ambonara, Hell-Ville, Nosy-Be, Madagascar</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="small mb-1">Suivez-nous</p>
+          <a href="#" class="me-2">Facebook</a>
+          <a href="#" class="me-2">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+  let arriveePicker = null;
+  let departPicker = null;
+  let disabledDates = [];
+
+  /*******************  Chargement des dates bloquées  *******************/
+  async function loadBlockedDates() {
+    const chId = document.querySelector('#id_chambre')?.value;
+    disabledDates = [];
+
+    if (chId) {
+        try {
+            const resp = await fetch(`/reserver/api/dates-bloquees/?chambre=${encodeURIComponent(chId)}`);
+            const data = await resp.json();
+            if (Array.isArray(data.dates)) {
+                disabledDates = data.dates.map((d) => {
+                    const [day, month, year] = d.split('/');
+                    return new Date(year, month - 1, day);
+                });
+            }
+        } catch (e) {
+            console.error("Erreur lors du chargement des dates bloquées :", e);
+        }
+    }
+
+    initPickers();
+  }
+
+  /*******************  Vérification des chambres disponibles  *******************/
+  async function checkDispo() {
+    const arrInput = document.querySelector('#id_date_arrivee');
+    const depInput = document.querySelector('#id_date_depart');
+    const arr = arrInput?.value;
+    const dep = depInput?.value;
+
+    if (!arr || !dep) return;
+
+    try {
+      const resp = await fetch(`/reserver/api/disponibilite/?arrivee=${encodeURIComponent(arr)}&depart=${encodeURIComponent(dep)}`);
+      const data = await resp.json();
+
+      const chambres = Array.isArray(data.chambres) ? data.chambres : [];
+      const select = document.querySelector('#id_chambre');
+
+      const currentVal = select.value;
+      select.innerHTML = '';
+
+      if (chambres.length === 0) {
+        const opt = document.createElement('option');
+        opt.text = "Aucune chambre libre";
+        opt.disabled = true;
+        opt.selected = true;
+        select.appendChild(opt);
+        select.disabled = true;
+      } else {
+        select.disabled = false;
+        chambres.forEach(c => {
+          if (c.id !== undefined && c.numero !== undefined && c.type !== undefined) {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = `Chambre ${c.numero} (${c.type})`;
+            select.appendChild(opt);
+          }
+        });
+
+        if (chambres.some(c => c.id == currentVal)) {
+          select.value = currentVal;
+        }
+      }
+    } catch (err) {
+      console.error("Erreur lors de la vérification de disponibilité :", err);
+    }
+  }
+
+  /*******************  Initialisation des Flatpickr  *******************/
+  function initPickers() {
+    if (arriveePicker) arriveePicker.destroy();
+    if (departPicker) departPicker.destroy();
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    arriveePicker = flatpickr("#id_date_arrivee", {
+      dateFormat: "d/m/Y",
+      minDate: tomorrow,
+      disable: disabledDates,
+      disableMobile: true,
+      onChange: function(selectedDates) {
+        if (selectedDates.length === 0) return;
+        const arr = selectedDates[0];
+        const minDep = new Date(arr);
+        minDep.setDate(arr.getDate() + 1);
+        departPicker.set('minDate', minDep);
+        checkDispo();
+      }
+    });
+
+    departPicker = flatpickr("#id_date_depart", {
+      dateFormat: "d/m/Y",
+      minDate: tomorrow,
+      disable: disabledDates,
+      disableMobile: true,
+      onChange: function(selectedDates) {
+        if (selectedDates.length === 0) return;
+        const dep = selectedDates[0];
+        const maxArr = new Date(dep);
+        maxArr.setDate(dep.getDate() - 1);
+        arriveePicker.set('maxDate', maxArr);
+        arriveePicker.set('minDate', tomorrow);
+        checkDispo();
+      }
+    });
+  }
+
+  /*******************  Téléphone : indicatif et longueur  *******************/
+  function updateMaxLength() {
+    const indicatif = document.getElementById('id_indicatif')?.value;
+    const input = document.getElementById('id_telephone_saisie');
+
+    if (!input) return;
+
+    const longueurs = {
+      '+261': 9,
+      '+33': 9,
+      '+254': 9,
+      '+27': 9,
+      '+44': 10,
+      '+1': 10,
+      '+49': 10,
+      '+39': 9,
+      '+34': 9,
+    };
+
+    if (indicatif in longueurs) {
+      input.maxLength = longueurs[indicatif];
+      input.placeholder = `Entrez ${longueurs[indicatif]} chiffres`;
+    } else {
+      input.maxLength = 0;
+      input.placeholder = "Choisissez votre indicatif";
+    }
+  }
+
+  /*******************  Initialisation globale  *******************/
+  document.addEventListener('DOMContentLoaded', function() {
+    loadBlockedDates();
+
+    const chambreSelect = document.querySelector('#id_chambre');
+    if (chambreSelect) {
+      chambreSelect.addEventListener('change', () => {
+        loadBlockedDates();
+        checkDispo();
+      });
+    }
+
+    const indicatifSelect = document.getElementById('id_indicatif');
+    if (indicatifSelect) {
+      indicatifSelect.addEventListener('change', updateMaxLength);
+    }
+
+    const telInput = document.getElementById('id_telephone_saisie');
+    if (telInput) {
+      telInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      });
+    }
+
+    updateMaxLength();
+  });
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
