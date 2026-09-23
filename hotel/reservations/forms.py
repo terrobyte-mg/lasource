@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from chambres.models import Chambre
 from .models import Reservation
 from datetime import date, timedelta
 
@@ -54,6 +55,7 @@ class ReservationForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'form-control'
             elif 'form-control' not in field.widget.attrs['class']:
                 field.widget.attrs['class'] += ' form-control'
+        self.fields['chambre'].queryset = Chambre.objects.filter(disponible=True).order_by('numero')
 
         # Pré-remplir si instance existe
         if self.instance and self.instance.pk and self.instance.telephone:

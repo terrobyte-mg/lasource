@@ -13,11 +13,10 @@ def accueil(request):
     })
 
 def chambres_accueil(request):
-    chambres = Chambre.objects.all().order_by('disponible', '-created')
-    return render(request, 'chambres/accueil.html', {})
+    chambres = Chambre.objects.all().order_by('disponible', '-created_at')
+    return render(request, 'chambres/accueil.html', {'chambres': chambres})
 
 
 def liste_chambres(request):
     chambres = Chambre.objects.filter(disponible=True)
     return render(request, 'chambres/liste.html', {'chambres': chambres})
-

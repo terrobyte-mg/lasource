@@ -20,7 +20,11 @@ def reserver(request):
             reservation.save()
             return redirect('reservations:confirmation')
     else:
-        form = ReservationForm()
+        initial = {}
+        chambre_id = request.GET.get('chambre')
+        if chambre_id and Chambre.objects.filter(id=chambre_id, disponible=True).exists():
+            initial['chambre'] = chambre_id
+        form = ReservationForm(initial=initial)
     return render(request, 'reservations/reserver.html', {'form': form})
 
 

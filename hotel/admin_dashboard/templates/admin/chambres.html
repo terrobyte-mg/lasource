@@ -705,7 +705,7 @@
                     {% if chambre.images.all %}
                         <img src="{{ chambre.images.all.0.image.url }}" alt="Chambre {{ chambre.numero }}" class="chambre-image">
                     {% else %}
-                        <img src="{% static 'default_room.jpg' %}" alt="Chambre {{ chambre.numero }}" class="chambre-image">
+                        <img src="{% static 'images/entrer.png' %}" alt="Chambre {{ chambre.numero }}" class="chambre-image">
                     {% endif %}
                     <div class="chambre-content">
                         <div class="chambre-header">
