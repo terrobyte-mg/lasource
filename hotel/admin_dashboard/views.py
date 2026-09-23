@@ -14,6 +14,7 @@ from django.db import transaction
 from django.db.models import Count, Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from admin_dashboard.forms import ChambreForm, ImageAccueilForm
 from chambres.models import Chambre, ChambreImage, ImageAccueil
@@ -55,11 +56,11 @@ Prix total : {prix_total:,.0f} Ar
 📍 ADRESSE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Hôtel La Source
-[Votre adresse complète]
+{settings.HOTEL_CONTACT_ADDRESS}
 
 📞 CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Téléphone : [Votre numéro]
+Téléphone : {settings.HOTEL_CONTACT_PHONE}
 Email : {settings.DEFAULT_FROM_EMAIL}
 
 Nous vous attendons avec impatience !
@@ -143,8 +144,8 @@ L'équipe de l'Hôtel La Source
                     <div class="section">
                         <div class="section-title">📍 Adresse & Contact</div>
                         <p style="margin: 5px 0;"><strong>Hôtel La Source</strong></p>
-                        <p style="margin: 5px 0; color: #6b7280;">[Votre adresse complète]</p>
-                        <p style="margin: 10px 0 5px 0;">📞 Téléphone : [Votre numéro]</p>
+                        <p style="margin: 5px 0; color: #6b7280;">{settings.HOTEL_CONTACT_ADDRESS}</p>
+                        <p style="margin: 10px 0 5px 0;">📞 Téléphone : {settings.HOTEL_CONTACT_PHONE}</p>
                         <p style="margin: 5px 0;">📧 Email : {settings.DEFAULT_FROM_EMAIL}</p>
                     </div>
 
@@ -209,7 +210,7 @@ Si vous n'êtes pas à l'origine de cette annulation ou si vous souhaitez effect
 
 📞 CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Téléphone : [Votre numéro]
+Téléphone : {settings.HOTEL_CONTACT_PHONE}
 Email : {settings.DEFAULT_FROM_EMAIL}
 
 Nous espérons vous accueillir prochainement.
@@ -289,7 +290,7 @@ L'équipe de l'Hôtel La Source
 
                     <div class="section">
                         <div class="section-title">📞 Contact</div>
-                        <p style="margin: 5px 0;">Téléphone : [Votre numéro]</p>
+                        <p style="margin: 5px 0;">Téléphone : {settings.HOTEL_CONTACT_PHONE}</p>
                         <p style="margin: 5px 0;">Email : {settings.DEFAULT_FROM_EMAIL}</p>
                     </div>
 
@@ -912,6 +913,7 @@ def supprimer_image_chambre(request, image_id):
 @login_required
 @user_passes_test(is_admin)
 @superuser_required
+@require_POST
 def toggle_disponibilite_chambre(request, chambre_id):
     """Activer/Désactiver la disponibilité d'une chambre (réservé aux superusers)"""
     chambre = get_object_or_404(Chambre, id=chambre_id)
@@ -927,22 +929,23 @@ def images_accueil(request):
 
     return render(request, 'admin/images_accueil.html', {'images': images})
 
+@login_required
+@user_passes_test(is_admin)
+@superuser_required
+@require_POST
 def ajouter_image_accueil(request):
-    if request.method == 'POST':
-        form = ImageAccueilForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Image ajoutée avec succès !")
-            return redirect('admin_dashboard:images_accueil')
+    form = ImageAccueilForm(request.POST, request.FILES)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Image ajoutée avec succès !")
     else:
-        form = ImageAccueilForm()
-
-    images = ImageAccueil.objects.all()
-    return render(request, 'admin/images_accueil.html', {'form': form, 'images': images})
+        messages.error(request, "Formulaire invalide. Vérifiez les champs saisis.")
+    return redirect('admin_dashboard:images_accueil')
 
 @login_required
 @user_passes_test(is_admin)
 @superuser_required
+@require_POST
 def toggle_image_actif(request, image_id):
     img = get_object_or_404(ImageAccueil, id=image_id)
     img.actif = not img.actif
@@ -954,6 +957,7 @@ def toggle_image_actif(request, image_id):
 @login_required
 @user_passes_test(is_admin)
 @superuser_required
+@require_POST
 def supprimer_image(request, image_id):
     img = get_object_or_404(ImageAccueil, id=image_id)
     if not img.actif:
@@ -969,6 +973,7 @@ def supprimer_image(request, image_id):
 
 @login_required
 @user_passes_test(is_admin)
+@require_POST
 def confirmer_reservation(request, reservation_id):
     """Confirmer une réservation"""
     reservation = get_object_or_404(Reservation, id=reservation_id)
@@ -980,6 +985,7 @@ def confirmer_reservation(request, reservation_id):
 @login_required
 @user_passes_test(is_admin)
 @superuser_required
+@require_POST
 def annuler_reservation(request, reservation_id):
     """Annuler/Supprimer une réservation (réservé aux superusers)"""
     reservation = get_object_or_404(Reservation, id=reservation_id)

@@ -480,6 +480,11 @@
 
       <form method="post" id="resForm">
         {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
 
         <!-- Informations personnelles -->
         <div class="mb-3">
@@ -568,6 +573,9 @@
           </label>
           <div>
             {{ form.date_arrivee }}
+            {% if form.date_arrivee.errors %}
+              <div class="text-danger mt-1">{{ form.date_arrivee.errors }}</div>
+            {% endif %}
           </div>
         </div>
 
@@ -577,6 +585,9 @@
           </label>
           <div>
             {{ form.date_depart }}
+            {% if form.date_depart.errors %}
+              <div class="text-danger mt-1">{{ form.date_depart.errors }}</div>
+            {% endif %}
           </div>
         </div>
 
@@ -585,7 +596,12 @@
           <label class="form-label">
             <span class="label-icon"><i class="fas fa-bed"></i> Chambre</span>
           </label>
-          {{ form.chambre }}
+          <div>
+            {{ form.chambre }}
+            {% if form.chambre.errors %}
+              <div class="text-danger mt-1">{{ form.chambre.errors }}</div>
+            {% endif %}
+          </div>
         </div>
 
         <button type="submit" class="btn-submit" style="grid-column: 1 / 3;">

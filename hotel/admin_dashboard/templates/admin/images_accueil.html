@@ -170,10 +170,19 @@
                 </td>
                 <td>
                     {% if img.actif %}
-                        <a href="{% url 'admin_dashboard:images_accueil_toggle' img.id %}" style="color:orange;">Désactiver</a>
+                        <form method="post" action="{% url 'admin_dashboard:images_accueil_toggle' img.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="color:orange; background:none; border:none; padding:0; cursor:pointer;">Désactiver</button>
+                        </form>
                     {% else %}
-                        <a href="{% url 'admin_dashboard:images_accueil_toggle' img.id %}" style="color:green;">Activer</a>
-                        <a href="{% url 'admin_dashboard:images_accueil_supprimer' img.id %}" style="color:red; margin-left: 10px;">Supprimer</a>
+                        <form method="post" action="{% url 'admin_dashboard:images_accueil_toggle' img.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="color:green; background:none; border:none; padding:0; cursor:pointer;">Activer</button>
+                        </form>
+                        <form method="post" action="{% url 'admin_dashboard:images_accueil_supprimer' img.id %}" style="display: inline; margin-left: 10px;">
+                            {% csrf_token %}
+                            <button type="submit" style="color:red; background:none; border:none; padding:0; cursor:pointer;">Supprimer</button>
+                        </form>
                     {% endif %}
                 </td>
 
